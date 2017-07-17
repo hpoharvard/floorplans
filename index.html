@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title></title>
+  
+  <link rel="stylesheet" href="https://js.arcgis.com/4.4/esri/css/main.css">
+  <link rel="stylesheet" href="css/floorplans.css">
+  <script src="https://js.arcgis.com/4.4/"></script>
+  <script src="js/floorplans.js"></script>    
+</head>
+
+<body>
+  <div id="viewDiv"></div>
+  <div id="info">
+        <p>How to use the URL parameters:</p>
+        <ul>
+        <li><b>bld</b> set bulding [bld=Science Center]</li>
+        <li><b>floor</b> set floor [floor=1]</li>
+        <li><b>level</b> set zoom [level=10]</li>
+        <li><b>ctrx and ctry</b> set location [ctrx=760294&ctry=2962254]</li>
+        </ul>
+        <p>Click any location on the map to see the coordinates and zoom level</p>
+        <p id="infolatlng"></p>
+
+  </div>
+</body>
+</html>
