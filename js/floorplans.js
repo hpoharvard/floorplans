@@ -67,7 +67,32 @@ require([
         })
     });
 
-    var floorplans = new FeatureLayer({url: urlFloorPlane + "0", outFields: ["*"], popupTemplate: popupTemplate});
+    var buildingRenderer1 = new SimpleRenderer({
+        symbol: new SimpleFillSymbol({
+          color: [10,10, 10, 0.7 ],
+          style: "solid",
+          outline: {
+            width: 1,
+            color: "grey"
+          }
+        })
+    });
+
+    var buildingRenderer2 = new SimpleRenderer({
+        symbol: new SimpleFillSymbol({
+          color: [10,10, 10, 0.3 ],
+          style: "solid",
+          outline: {
+            width: 1,
+            color: "grey"
+          }
+        })
+    });
+
+    var floorplans = new FeatureLayer({url: urlFloorPlane + "0", outFields: ["*"], popupTemplate: popupTemplate, definitionExpression: "floor = 'L'", renderer: buildingRenderer2});
+    
+    var floorplans1 = new FeatureLayer({url: urlFloorPlane + "0", renderer: buildingRenderer1, definitionExpression: "floor = 'L'"});
+    
     var spacePolyLayer = new FeatureLayer(urlLearnigSpace + "2",{outFields: ["*"]}); // spacePolyLayer
     
     var entranceLayer = new FeatureLayer(urlLearnigSpace + "1",{
@@ -137,6 +162,7 @@ require([
     // check url floor paremeter
     if(URLfloor!= null){
             floorplans.definitionExpression = "Floor = '" + URLfloor + "'";
+            //floorplans1.definitionExpression = "Floor = '" + URLfloor + "'";
             //spaceAreaLayer.definitionExpression = "Building_Name = '" + URLbld + "'";
             //entranceLayer.definitionExpression = "ASSET_NAME = '" + URLbld.toUpperCase() + "'";
             URLfloor = null;
@@ -174,7 +200,29 @@ require([
     
     if(URLtype!= null){            
         floorplans.definitionExpression = "Annotation = '" + URLtype + "'";
-        console.log(URLtype)        
+        console.log(URLtype)
+        view.whenLayerView(floorplans).then(function(lyrView){
+                lyrView.watch("updating", function(val){
+                    if(!val){  // wait for the layer view to finish updating
+                        lyrView.queryFeatures().then(function(results){
+                            console.log(results);  // prints all the client-side graphics to the console
+                            var pGraphic = new Graphic({
+                                geometry: results[0].geometry,
+                                symbol: new SimpleFillSymbol({
+                                    color: [ 0, 255, 0, 1],
+                                    style: "solid",
+                                    outline: {  // autocasts as esri/symbols/SimpleLineSymbol
+                                        color: "#009900",
+                                        width: 2
+                                    }
+                                })
+                            });
+                            
+                            resultsLayer.add(pGraphic);
+                        });
+                    }
+                });
+            });         
         URLtype = null;
 
     }
