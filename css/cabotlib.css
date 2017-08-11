@@ -1,0 +1,54 @@
+/*code by Giovanni Zambotti - May 2017*/
+html,body {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	width: 100%;
+	font-family: "Gotham", Sans-serif;
+}
+
+.esri-view-height-xsmall .esri-ui-corner .esri-legend {
+    max-height: 440px;
+}
+
+#alert_placeholder{
+  display: hide;  
+ }
+
+.close:before {
+  position: relative;	
+  content: '✕';
+  top: -2px;
+  right: 0px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #828282;
+}
+
+img{
+  padding-top:10px;
+}
+
+ul{
+  margin:0;
+  list-style-position: inside;
+    padding-left:0;
+}
+
+.esri-popup__content {
+    display: flex;
+    flex-flow: column nowrap;
+    margin: 15px;
+    flex: 1 1 auto;
+    font-size: 14px;
+    font-weight: 400; 
+    overflow: auto;
+    overflow-x: hidden;
+}
+
+.esri-popup__content p {
+    font-size: 14px;
+    line-height: 1.3em;
+    margin: 0 0 1.2em;
+    margin-top: 10px;
+}
