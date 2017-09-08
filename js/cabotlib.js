@@ -64,11 +64,16 @@ require([
       var entranceLayer = new FeatureLayer(urlLearnigSpace + "1",{definitionExpression: "ASSET_NAME = 'SCIENCE CENTER'"});
 
       var popupTemplate = {
-        title: "<b>Note</b>: {Annotation}",
-        content: "<p><img width='300px' src='https://map.harvard.edu/images/cabotlib/{roomimg}'></p>"
+        title: "{Annotation}",
+        //content: "<p><img width='300px' src='https://map.harvard.edu/images/cabotlib/{roomimg}'></p><p>Capacity: {Capacity}</p><p><a html='https://www.google.com/' target='_blank'>Book this room!</a></p>"            
+        content: "<p>Capacity: {Capacity}</p><p><img width='250px' src='https://map.harvard.edu/images/cabotlib/{roomimg}'></p>",
+        actions:[{id:"cabotlib_pop", image: "css/images/library.png", title: "Cabot Library"},{id:"roombook_pop", image: "css/images/time.png", title: "Room Book"}]            
+        
       }; 
+
+      popupTemplate.overwriteActions = true;
       
-      var myzoom = 9, lon = 759859, lat = 2962364;
+      var myzoom = 11, lon = 759859, lat = 2962364;
 
       var xMax = -7915458.81211143;
       var xMin = -7917751.9229597915;
@@ -106,13 +111,42 @@ require([
         yMin = 5216121.17579509;
       };
 
-      var floorRenderer = new SimpleRenderer({
+      /*var floorRenderer = new SimpleRenderer({
         symbol: new SimpleFillSymbol({
           color: [10,10, 10, 0.2],
-          style: "backward-diagonal",
+          style: "solid",
           outline: {
             width: 1,
             color: "black"
+          }
+        })
+      });*/
+
+
+      var floorRenderer = new UniqueValueRenderer({
+        field: "reservation",
+        defaultSymbol: new SimpleFillSymbol()
+      });
+
+      floorRenderer.addUniqueValueInfo(1,
+        new SimpleFillSymbol({
+          color: [78,132,196, 0.8],
+          style: "solid",
+          outline: {
+            width: 2,
+            color: [89, 89, 89]
+          }
+        })
+      );
+      // All features with value of "South" will be red
+      floorRenderer.addUniqueValueInfo({
+        value: 0,
+        symbol: new SimpleFillSymbol({
+          color: [204, 204, 204, 0.8],
+          style: "solid",
+          outline: {
+            width: 2,
+            color: [89, 89, 89]
           }
         })
       });
@@ -140,13 +174,23 @@ require([
         //center: [lon, lat], /*-71.11607611178287, 42.37410778220068*/
         zoom: myzoom,        
         padding: {top: 50, bottom: 0}, 
-        breakpoints: {xsmall: 768, small: 769, medium: 992, large: 1200}        
+        breakpoints: {xsmall: 768, small: 769, medium: 992, large: 1200},
+        popup: {
+          dockEnabled: true,
+          dockOptions: {
+            // Disables the dock button from the popup
+            buttonEnabled: false,
+            // Ignore the default sizes that trigger responsive docking
+            breakpoint: false,
+            position: "top-center"
+          }
+        }     
       });
-          
-
+               
+      
       // Disables map rotation
-      view.constraints = {rotationEnabled: false};
-                  
+      view.constraints = {rotationEnabled: true};
+                       
       /********************************
       * Create a locate widget object.
       *********************************/        
@@ -159,16 +203,10 @@ require([
       var floorLevel = document.getElementById("infoFloorLevel");
 
       floorLevel.addEventListener("change", function() {        
-        console.log(floorLevel)
-        
-        /*var selectedAmenities = amenities.options[amenities.selectedIndex].value;        
-        queryFdo(selectedAmenities).then(displayResults);
-        var dorms = document.getElementById("infoDorms");        
-        dorms.options[0].selected = true;
-        view.popup.visible = false;
-        */
         var floorLevel = document.getElementById("infoFloorLevel");        
         floorplans.definitionExpression = "Floor = '" + floorLevel[floorLevel.options.selectedIndex].value + "'";
+        view.popup.visible = false;
+        resultsLayer.removeAll();
       });
      
       
@@ -193,7 +231,7 @@ require([
             floorplansSelect.definitionExpression = "roomnumber = '" + URLroom + "'";
             map.add(floorplansSelect);
             var floorLevel = document.getElementById("infoFloorLevel");
-            console.log(URLfloor)
+            //console.log(URLfloor)
              
             
             
@@ -228,27 +266,27 @@ require([
         floorplans.definitionExpression = "Annotation = '" + URLtype + "'";
         console.log(URLtype)
         view.whenLayerView(floorplans).then(function(lyrView){
-                lyrView.watch("updating", function(val){
-                    if(!val){  // wait for the layer view to finish updating
-                        lyrView.queryFeatures().then(function(results){
-                            console.log(results);  // prints all the client-side graphics to the console
-                            var pGraphic = new Graphic({
-                                geometry: results[0].geometry,
-                                symbol: new SimpleFillSymbol({
-                                    color: [ 0, 255, 0, 1],
-                                    style: "solid",
-                                    outline: {  // autocasts as esri/symbols/SimpleLineSymbol
-                                        color: "#009900",
-                                        width: 2
-                                    }
-                                })
-                            });
-                            
-                            resultsLayer.add(pGraphic);
-                        });
-                    }
-                });
-            });         
+          lyrView.watch("updating", function(val){
+              if(!val){  // wait for the layer view to finish updating
+                  lyrView.queryFeatures().then(function(results){
+                      console.log(results);  // prints all the client-side graphics to the console
+                      var pGraphic = new Graphic({
+                          geometry: results[0].geometry,
+                          symbol: new SimpleFillSymbol({
+                              color: [ 0, 255, 0, 1],
+                              style: "solid",
+                              outline: {  // autocasts as esri/symbols/SimpleLineSymbol
+                                  color: "#009900",
+                                  width: 2
+                              }
+                          })
+                      });
+                      
+                      resultsLayer.add(pGraphic);
+                  });
+                }
+            });
+        });         
         URLtype = null;
 
     }
@@ -262,31 +300,52 @@ require([
 
 
     view.on("click", function (e){
-            //console.log(e)
-            //document.getElementById("infolatlng").innerHTML = ""
-            //document.getElementById("infolatlng").innerHTML = "ctrx=" + e.mapPoint.x.toFixed(0) + "&ctry=" + e.mapPoint.y.toFixed(0) + "&level=" + view.zoom
-            //var screenPoint = e.screenPoint;
-            view.hitTest(e.screenPoint).then(getGraphics);
-
-                        
+      //console.log(e);        
+      //var screenPoint = e.screenPoint;
+     
+      view.hitTest(e.screenPoint).then(getGraphics);
+      popup = view.popup;
+      console.log(popup.features);                
     }); 
+    
+    view.popup.on("trigger-action", function(event){
+   
+        if(event.action.id === "cabotlib_pop"){
+          console.log(view.popup.viewModel.selectedFeature.attributes);
+          var attributes = view.popup.viewModel.selectedFeature.attributes;
+          window.open(attributes.CabotLibrary);
+        }
+        else if ( event.action.id  === "roombook_pop"){
+          console.log(view.popup.viewModel.selectedFeature.attributes.roombook)
+          if(view.popup.viewModel.selectedFeature.attributes.roombook == null){
+            var f = document.querySelectorAll('[title="Room Book"]')
+            f[0].innerText = "This room is not bookable!";
+          }
+          else{
+            window.open(view.popup.viewModel.selectedFeature.attributes.roombook);
+          }
+        }
+      }); 
+
 
     function getGraphics(response) {
+        //console.log(response.results[0].graphic.geometry)
         resultsLayer.removeAll();
         var pGraphic = new Graphic({
             geometry: response.results[0].graphic.geometry,
             symbol: new SimpleFillSymbol({
                 color: [ 0, 255, 0, 1],
-                style: "solid",
+                style: "none",
                 outline: {  // autocasts as esri/symbols/SimpleLineSymbol
-                    color: "#009900",
+                    color: "#ff0000",
                     width: 2
                 }
             })
         });
-        console.log(pGraphic)
+        //console.log(pGraphic)
         
         resultsLayer.add(pGraphic);
+        map.add(resultsLayer)
         
     };       
       

@@ -26,7 +26,7 @@
 
   <!-- Navbar -->
 
-  <nav class="navbar calcite-navbar navbar-fixed-top calcite-text-dark calcite-bg-dark" style="background-color: rgb(158, 28, 32);">
+  <nav class="navbar calcite-navbar navbar-fixed-top calcite-text-light calcite-bg-dark" style="background-color: rgb(41,51,82);">
     <!-- Menu -->
     <div class="dropdown calcite-dropdown calcite-text-dark calcite-bg-light" role="presentation">
       <a class="dropdown-toggle" role="button" aria-haspopup="true" aria-expanded="false">
@@ -39,9 +39,8 @@
         </div>
       </a>
       <ul class="dropdown-menu">
-        <li><a role="button" data-target="#panelInfo" aria-haspopup="false"><span class="glyphicon glyphicon-info-sign"></span> Info</a></li>        
-        <li><a role="button" data-target="#panelFilterDorm" aria-haspopup="false"><span class="glyphicon glyphicon-home"></span>Select a dormitory</a></li>
-        <li><a role="button" data-target="#panelFilterAmenity" aria-haspopup="false"><span class="glyphicon glyphicon-filter"></span>Select an amenity</a></li>        
+        <li><a role="button" data-target="#panelInfo" aria-haspopup="false"><span class="glyphicon glyphicon-info-sign"></span>Info</a></li>
+        <li><a role="button" data-target="#panelFilterFloorLevel" aria-haspopup="false"><span class="glyphicon glyphicon-home"></span>Select a Floor</a></li>
         <li><a role="button" id="calciteToggleNavbar" aria-haspopup="true"><span class="glyphicon glyphicon-fullscreen"></span> Full Map</a></li>
       </ul>
     </div>
@@ -74,12 +73,12 @@
 
   <!-- Panels -->
 
-  <div class="calcite-panels calcite-panels-right calcite-text-dark calcite-bg-dark panel-group" style="background-color: rgb(255,239,214);">
+  <div class="calcite-panels calcite-panels-right calcite-text-light calcite-bg-dark panel-group" style="background-color: rgb(78,132,196);">
 
     <!-- Info Panel -->
     <div id="panelInfo" class="panel collapse in">
       <div id="headingInfo" class="panel-heading" role="tab">
-        <div class="panel-title" style="background-color: rgb(158, 28, 32);">
+        <div class="panel-title" style="background-color: rgb(41,51,82);">
           <a class="panel-toggle collapsed" role="button" data-toggle="collapse" href="#collapseInfo"
             aria-expanded="false" aria-controls="collapseInfo"><span class="glyphicon glyphicon-info-sign
 " aria-hidden="true"></span><span class="panel-label">Info</span></a>
@@ -89,13 +88,16 @@
       </div>
       <div id="collapseInfo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingInfo">
         <div id="infoBox" class="panel-body">
-         <ul>
+        Here we should add a short intro about this app and how to use it. Not sure if we need to add the Legend.
+        <!--
+        <ul>
         <li><b>room</b> set room [room=L103]</li>
         <li><b>floor</b> set floor [floor=L or floor=LL]</li>
         <li><b>type</b> set type [type=Coffee Bar]</li>
         <li><b>level</b> set zoom [level=10]</li>
-        <!--<li><b>ctrx and ctry</b> set location [ctrx=760294&ctry=2962254]</li>-->
+        <li><b>ctrx and ctry</b> set location [ctrx=760294&ctry=2962254]</li>
         </ul>
+        -->
         <!--Click any location on the map to see the coordinates and zoom level-->
         <!--
           <p><a class="artsinfo" href="http://ofa.fas.harvard.edu/arts" target="_blank">More info here!</a></p>          
@@ -107,7 +109,7 @@
     <!-- Filter Floor Level-->
     <div id="panelFilterFloorLevel" class="panel collapse in" >
       <div id="headingFilter" class="panel-heading" role="tab">
-        <div class="panel-title" style="background-color: rgb(158, 28, 32);">
+        <div class="panel-title" style="background-color: rgb(41,51,82);">
           <a class="panel-toggle collapsed" role="button" data-toggle="collapse" href="#collapseFilter"
             aria-expanded="false" aria-controls="collapseFilter"><span class="glyphicon glyphicon-home" aria-hidden="true"></span><span class="panel-label">Select a Floor</span></a>
           <a class="panel-close" role="button" data-toggle="collapse" data-target="#panelFilterFloorLevel"><span class="esri-icon esri-icon-close" aria-hidden="true"></span></a>
@@ -117,8 +119,9 @@
         <div class="panel-body">
           <select id="infoFloorLevel" class="form-control">
             <option selected disabled hidden>Select a floor...</option>
+            <option value= "LL">Lower Level</option>
             <option value= "L">First Level</option>
-            <option value= "LL">Lower Level</option>            
+            <option value= "L2">Second Level</option>
           </select>
         </div>                
       </div>      

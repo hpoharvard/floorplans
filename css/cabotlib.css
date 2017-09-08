@@ -48,7 +48,8 @@ ul{
 
 .esri-popup__content p {
     font-size: 14px;
-    line-height: 1.3em;
+    line-height: 0.1em;
     margin: 0 0 1.2em;
     margin-top: 10px;
 }
+
