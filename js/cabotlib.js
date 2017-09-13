@@ -32,7 +32,7 @@ require([
       SimpleFillSymbol, UniqueValueRenderer, Extent, Popup, SpatialReference, Point, urlUtils) {
 
       var URLparams = urlUtils.urlToObject(window.location.href);
-      //var popup;
+      var popup;
 
       if(URLparams.query){
           var URLlevel = (URLparams.query.level) ? parseInt(URLparams.query.level) : null; // zoom level
@@ -190,10 +190,10 @@ require([
       /********************************
       * Create a locate widget object.
       *********************************/        
-      var locateBtn = new Locate({view: view});
+      //var locateBtn = new Locate({view: view});
 
       // Add the locate widget to the top left corner of the view
-      view.ui.add(locateBtn, {position: "top-left"});
+      //view.ui.add(locateBtn, {position: "top-left"});
               
       var floorLevel = document.getElementById("infoFloorLevel");
 
@@ -202,6 +202,9 @@ require([
         floorplans.definitionExpression = "Floor = '" + floorLevel[floorLevel.options.selectedIndex].value + "'";
         view.popup.visible = false;
         resultsLayer.removeAll();
+        if(URLparams.query.room != null){
+          map.remove(floorplansSelect)
+        }
       });
    
       
@@ -216,10 +219,9 @@ require([
         else if(URLfloor == 'LL'){floorLevel.options[1].selected = true;}
         else if(URLfloor == 'L2'){floorLevel.options[3].selected = true;}  
         URLfloor = null;
-      }
-    
-    // check url floor paremeter
-    if(URLroom!= null){            
+      }    
+      // check url floor paremeter
+      if(URLroom!= null){            
         floorplansSelect.definitionExpression = "roomnumber = '" + URLroom + "'";
         map.add(floorplansSelect);
         var floorLevel = document.getElementById("infoFloorLevel");
@@ -248,11 +250,12 @@ require([
             });
         });             
         URLroom = null;
-    }
-    // check url room type paremeter
-    var highlight;
+      }
+      // check url room type paremeter
     
-    if(URLtype!= null){            
+      var highlight;
+    
+      if(URLtype!= null){            
         floorplansSelect.definitionExpression = "Annotation = '" + URLtype + "'";
         map.add(floorplansSelect);
         console.log(floorplansSelect)
@@ -280,10 +283,8 @@ require([
                 }
             });
         });
-
         URLtype = null;
-
-    }
+      }
 
     if(URLctrX!= null && URLctrY !=null){
       console.log(URLctrY, URLctrX)
