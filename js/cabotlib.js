@@ -212,8 +212,8 @@ require([
 
       if(URLfloor!= null){
         floorplans.definitionExpression = "Floor = '" + URLfloor + "'";
-        if(URLfloor == 'L'){floorLevel.options[1].selected = true;}
-        else if(URLfloor == 'LL'){floorLevel.options[2].selected = true;}
+        if(URLfloor == 'L'){floorLevel.options[2].selected = true;}
+        else if(URLfloor == 'LL'){floorLevel.options[1].selected = true;}
         else if(URLfloor == 'L2'){floorLevel.options[3].selected = true;}  
         URLfloor = null;
       }
