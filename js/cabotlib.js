@@ -286,10 +286,10 @@ require([
     }
 
     if(URLctrX!= null && URLctrY !=null){
-            console.log(URLctrY, URLctrX)
-            view.center = new Point(URLctrX, URLctrY,new SpatialReference({ wkid:2249})); // http://localhost/2017/hpo/hilt/new/?level=5
-            URLctrX = null;
-            URLctrY = null;
+      console.log(URLctrY, URLctrX)
+      view.center = new Point(URLctrX, URLctrY,new SpatialReference({ wkid:2249})); // http://localhost/2017/hpo/hilt/new/?level=5
+      URLctrX = null;
+      URLctrY = null;
     }
 
 
@@ -299,21 +299,21 @@ require([
       view.hitTest(e.screenPoint).then(getGraphics);                    
     }); 
     
-    view.popup.on("trigger-action", function(event){
-        
+    view.popup.on("trigger-action", function(event){        
         if(event.action.id === "cabotlib_pop"){
           window.open("https://cabot.library.harvard.edu/");
         }
-        else if ( event.action.id  === "roombook_pop"){
-        
-          window.open("https://roombook.fas.harvard.edu/VirtualEMS/RoomRequest.aspx?data=ity3Dem%2byxxGFZTQvNr979PTZkmRU0pX");
-          
+        else if ( event.action.id  === "roombook_pop"){        
+          window.open("https://roombook.fas.harvard.edu/VirtualEMS/RoomRequest.aspx?data=ity3Dem%2byxxGFZTQvNr979PTZkmRU0pX");          
         }
       }); 
 
 
     function getGraphics(response) {
-        //console.log(response.results[0].graphic.geometry)
+        console.log(URLparams.query.room)
+        if(URLparams.query.room != null){
+          map.remove(floorplansSelect)
+        }
         resultsLayer.removeAll();
         var pGraphic = new Graphic({
             geometry: response.results[0].graphic.geometry,
