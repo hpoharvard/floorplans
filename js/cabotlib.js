@@ -1,15 +1,15 @@
-// code by Giovanni Zambotti - 20 August 2017
+// code by Giovanni Zambotti - update 15 September 2017
 require([
       "esri/Map",
       "esri/views/MapView",      
-      "esri/widgets/Locate",
+      //"esri/widgets/Locate",
       "esri/layers/FeatureLayer",
       "esri/layers/GraphicsLayer",
       "esri/Graphic",
       "esri/layers/MapImageLayer",
       "esri/layers/TileLayer",
       "esri/renderers/SimpleRenderer",
-      "esri/symbols/SimpleMarkerSymbol",
+      //"esri/symbols/SimpleMarkerSymbol",
       "esri/symbols/SimpleFillSymbol",
       "esri/renderers/UniqueValueRenderer",
       "esri/geometry/Extent",
@@ -17,22 +17,19 @@ require([
       "esri/geometry/SpatialReference",
       "esri/geometry/Point",
       "esri/core/urlUtils",
-
       // Bootstrap
       "bootstrap/Dropdown",
-      "bootstrap/Collapse",      
-
+      "bootstrap/Collapse",
       // Calcite Maps
       "calcite-maps/calcitemaps-v0.3",
 
       "dojo/domReady!"
-    ], //function(Map, MapView, FeatureLayer, GraphicsLayer,Graphic, MapImageLayer, TileLayer, SimpleRenderer, SimpleMarkerSymbol, 
-      //SimpleFillSymbol, UniqueValueRenderer) {
-      function(Map, MapView, Locate, FeatureLayer, GraphicsLayer, Graphic, MapImageLayer, TileLayer, SimpleRenderer, SimpleMarkerSymbol, 
-      SimpleFillSymbol, UniqueValueRenderer, Extent, Popup, SpatialReference, Point, urlUtils) {
-
+    ], //function(Map, MapView, Locate, FeatureLayer, GraphicsLayer, Graphic, MapImageLayer, TileLayer, SimpleRenderer, SimpleMarkerSymbol, 
+      //SimpleFillSymbol, UniqueValueRenderer, Extent, Popup, SpatialReference, Point, urlUtils) {
+      function(Map, MapView, FeatureLayer, GraphicsLayer, Graphic, MapImageLayer, TileLayer, SimpleRenderer, SimpleFillSymbol, UniqueValueRenderer, Extent, Popup, SpatialReference, Point, urlUtils) {
+  
       var URLparams = urlUtils.urlToObject(window.location.href);
-      var popup;
+      var popup; var highlight;
 
       if(URLparams.query){
           var URLlevel = (URLparams.query.level) ? parseInt(URLparams.query.level) : null; // zoom level
@@ -51,35 +48,32 @@ require([
           var URLctrX = null;
           var URLctrY = null;                                
       }
-
-      // Graphic for displaying results
+      
       var resultsLayer = new GraphicsLayer(); 
-
+      // Graphic for displaying results
       var urlLearnigSpace = "https://hppm-dev.cadm.harvard.edu/arcgis/rest/services/HILT/LearningSpaces/MapServer/";
       var urlFloorPlane = "https://map.harvard.edu/arcgis/rest/services/cabotlib/CabotLibWeb/MapServer/";
       var layerbaseUrl = "https://map.harvard.edu/arcgis/rest/services/CampusBase/MapServer";
       var textLayerUrl = "https://map.harvard.edu/arcgis/rest/services/MapText/MapServer";
-
+      // set end point map services
       var layerBase = new TileLayer({url: layerbaseUrl});
       var textLayer = new MapImageLayer(textLayerUrl, {opacity:.5});
       var entranceLayer = new FeatureLayer(urlLearnigSpace + "1",{definitionExpression: "ASSET_NAME = 'SCIENCE CENTER'"});
-
+      
       var popupTemplate = {
         title: "{Annotation}",        
         content: "<p>Room Number: {roomnumber}</p><p>Capacity: {Capacity}</p><p><img width='250px' src='https://map.harvard.edu/images/cabotlib/{roomimg}'></p>",
         actions:[{id:"cabotlib_pop", image: "css/images/library.png", title: "Cabot Library"},{id:"roombook_pop", image: "css/images/time.png", title: "Room Book"}]            
-        
       }; 
-
+      // popup template to link both reservation and the cabolt library site
       popupTemplate.overwriteActions = true;
 
       var popupTemplateReservation = {
         title: "{Annotation}",        
         content: "<p>Room Number: {roomnumber}</p><p>Capacity: {Capacity}</p><p><img width='250px' src='https://map.harvard.edu/images/cabotlib/{roomimg}'></p>",
-        actions:[{id:"cabotlib_pop", image: "css/images/library.png", title: "Cabot Library"}]            
-        
+        actions:[{id:"cabotlib_pop", image: "css/images/library.png", title: "Cabot Library"}]       
       }; 
-      
+      // popup template to link only the cabot library site
       popupTemplateReservation.overwriteActions = true;
 
       var myzoom = 11, lon = 759859, lat = 2962364;
@@ -161,14 +155,13 @@ require([
       
       var floorplans = new FeatureLayer({url: urlFloorPlane + "0", outFields: ["Annotation", "Capacity", "roomnumber","roomimg", "reservation"], definitionExpression: "floor = 'L'", renderer: floorRenderer});
       var floorplansSelect = new FeatureLayer({url: urlFloorPlane + "0", outFields: ["Annotation", "Capacity", "roomnumber","roomimg", "reservation"], renderer: floorRendererSelect});
-      
+      // create two feature layer
       var map = new Map({layers: [layerBase, textLayer, floorplans, entranceLayer]});
 
       var view = new MapView({
         container: "mapViewDiv",
         map: map,
-        center: new Point(lon,lat,new SpatialReference({ wkid:2249})),
-        //center: [lon, lat], /*-71.11607611178287, 42.37410778220068*/
+        center: new Point(lon,lat,new SpatialReference({ wkid:2249})),        
         zoom: myzoom,        
         padding: {top: 50, bottom: 0}, 
         breakpoints: {xsmall: 768, small: 769, medium: 992, large: 1200},
@@ -206,20 +199,21 @@ require([
           map.remove(floorplansSelect)
         }
       });
-   
+      // manage event change for the pull down menu
       
       if(URLlevel!= null){
         view.zoom = URLlevel-1; // http://localhost/2017/hpo/hilt/new/?level=5
         URLlevel = null;
       }
-
+      // check url level parameter  
       if(URLfloor!= null){
         floorplans.definitionExpression = "Floor = '" + URLfloor + "'";
         if(URLfloor == 'L'){floorLevel.options[2].selected = true;}
         else if(URLfloor == 'LL'){floorLevel.options[1].selected = true;}
         else if(URLfloor == 'L2'){floorLevel.options[3].selected = true;}  
         URLfloor = null;
-      }    
+      }
+
       // check url floor paremeter
       if(URLroom!= null){            
         floorplansSelect.definitionExpression = "roomnumber = '" + URLroom + "'";
@@ -231,76 +225,63 @@ require([
               if(!val){  // wait for the layer view to finish updating
                   lyrView.queryFeatures().then(function(results){
                       console.log(results[0].attributes.reservation);  // prints all the client-side graphics to the console
-                      view.popup.title = results[0].attributes.Annotation;
-                      
+                      view.popup.title = results[0].attributes.Annotation;                      
                       if(results[0].attributes.reservation == 0){
                         view.popup.content = "<p>Room Number: " + results[0].attributes.roomnumber + "</p><p>Capacity: " + results[0].attributes.Capacity + "</p><p><img width='250px' src='https://map.harvard.edu/images/cabotlib/" + results[0].attributes.roomimg + "'></p>",
-                        view.popup.actions = [{id:"cabotlib_pop", image: "css/images/library.png", title: "Cabot Library"}]            
-                       
+                        view.popup.actions = [{id:"cabotlib_pop", image: "css/images/library.png", title: "Cabot Library"}]        
                       }
                       else{
                         view.popup.content = "<p>Room Number: " + results[0].attributes.roomnumber + "</p><p>Capacity: " + results[0].attributes.Capacity + "</p><p><img width='250px' src='https://map.harvard.edu/images/cabotlib/" + results[0].attributes.roomimg + "'></p>",
                         view.popup.actions = [{id:"cabotlib_pop", image: "css/images/library.png", title: "Cabot Library"},{id:"roombook_pop", image: "css/images/time.png", title: "Room Book"}]            
-                      }
-                      
+                      }                      
                       view.popup.visible = true;                
-
                   });
                 }
             });
         });             
         URLroom = null;
       }
-      // check url room type paremeter
-    
-      var highlight;
-    
+      // check url room type parameter
+       
       if(URLtype!= null){            
         floorplansSelect.definitionExpression = "Annotation = '" + URLtype + "'";
-        map.add(floorplansSelect);
-        console.log(floorplansSelect)
+        map.add(floorplansSelect);        
         view.popup.location = view.center;
         view.whenLayerView(floorplansSelect).then(function(lyrView){
           lyrView.watch("updating", function(val){
               if(!val){  // wait for the layer view to finish updating
-                  lyrView.queryFeatures().then(function(results){
-                      console.log(results[0].attributes.reservation);  // prints all the client-side graphics to the console
-                      view.popup.title = results[0].attributes.Annotation;
-                      
+                  lyrView.queryFeatures().then(function(results){                      
+                      view.popup.title = results[0].attributes.Annotation;                      
                       if(results[0].attributes.reservation == 0){
                         view.popup.content = "<p>Room Number: " + results[0].attributes.roomnumber + "</p><p>Capacity: " + results[0].attributes.Capacity + "</p><p><img width='250px' src='https://map.harvard.edu/images/cabotlib/" + results[0].attributes.roomimg + "'></p>",
                         view.popup.actions = [{id:"cabotlib_pop", image: "css/images/library.png", title: "Cabot Library"}]            
-                       
                       }
                       else{
                         view.popup.content = "<p>Room Number: " + results[0].attributes.roomnumber + "</p><p>Capacity: " + results[0].attributes.Capacity + "</p><p><img width='250px' src='https://map.harvard.edu/images/cabotlib/" + results[0].attributes.roomimg + "'></p>",
                         view.popup.actions = [{id:"cabotlib_pop", image: "css/images/library.png", title: "Cabot Library"},{id:"roombook_pop", image: "css/images/time.png", title: "Room Book"}]            
                       }
-                      
                       view.popup.visible = true;                
-
                   });
                 }
             });
         });
         URLtype = null;
       }
+      // check url type parameter
+      if(URLctrX!= null && URLctrY !=null){        
+        view.center = new Point(URLctrX, URLctrY,new SpatialReference({ wkid:2249})); // http://localhost/2017/hpo/hilt/new/?level=5
+        URLctrX = null;
+        URLctrY = null;
+      }
+      // center the map by url parameter
+      view.on("click", function (e){      
+        //var screenPoint = e.screenPoint;     
+        console.log(e.screenPoint)
+        view.hitTest(e.screenPoint).then(getGraphics);                    
+      }); 
+      // action on click on a map
 
-    if(URLctrX!= null && URLctrY !=null){
-      console.log(URLctrY, URLctrX)
-      view.center = new Point(URLctrX, URLctrY,new SpatialReference({ wkid:2249})); // http://localhost/2017/hpo/hilt/new/?level=5
-      URLctrX = null;
-      URLctrY = null;
-    }
-
-
-    view.on("click", function (e){
-      //console.log(e);        
-      //var screenPoint = e.screenPoint;     
-      view.hitTest(e.screenPoint).then(getGraphics);                    
-    }); 
-    
-    view.popup.on("trigger-action", function(event){        
+      view.popup.on("trigger-action", function(event){        
         if(event.action.id === "cabotlib_pop"){
           window.open("https://cabot.library.harvard.edu/");
         }
@@ -308,40 +289,35 @@ require([
           window.open("https://roombook.fas.harvard.edu/VirtualEMS/RoomRequest.aspx?data=ity3Dem%2byxxGFZTQvNr979PTZkmRU0pX");          
         }
       }); 
-
-
-    function getGraphics(response) {
-        console.log(URLparams.query.room)
-        if(URLparams.query.room != null){
-          map.remove(floorplansSelect)
-        }
+      // action on a popup content click
+      function getGraphics(response) {
+        //console.log(URLparams.query.room)
+        
         resultsLayer.removeAll();
         var pGraphic = new Graphic({
-            geometry: response.results[0].graphic.geometry,
-            symbol: new SimpleFillSymbol({
-                color: [ 0, 255, 0, 1],
-                style: "solid",
-                outline: {  // autocasts as esri/symbols/SimpleLineSymbol
-                    color: "009900",
-                    width: 2
-                }
-            })
+          geometry: response.results[0].graphic.geometry,
+          symbol: new SimpleFillSymbol({
+            color: [ 0, 255, 0, 1],
+            style: "solid",
+            outline: {  // autocasts as esri/symbols/SimpleLineSymbol
+              color: "009900",
+              width: 2
+            }
+          })
         });
-        
-               
+                       
         resultsLayer.add(pGraphic);
-        map.add(resultsLayer)
-
+        map.add(resultsLayer);
         if(response.results[0].graphic.attributes.reservation == 0){
           floorplans.popupTemplate = popupTemplateReservation;
           popup = view.popup;
         }
         else{
-         floorplans.popupTemplate = popupTemplate;
+          floorplans.popupTemplate = popupTemplate;
           popup = view.popup; 
+        }
+        if(URLparams.query.room != null){
+          map.remove(floorplansSelect)
         }        
-    }       
-      
-          
-      
+      } 
 });
