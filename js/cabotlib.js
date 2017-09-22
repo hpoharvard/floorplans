@@ -33,7 +33,7 @@ require([
 
       if(URLparams.query){
           var URLlevel = (URLparams.query.level) ? parseInt(URLparams.query.level) : null; // zoom level
-          var URLbld = (URLparams.query.bld) ? URLparams.query.bld : null; // buidling name
+          //var URLbld = (URLparams.query.bld) ? URLparams.query.bld : null; // buidling name
           var URLfloor = (URLparams.query.floor) ? URLparams.query.floor : null; // floor name
           var URLroom = (URLparams.query.room) ? URLparams.query.room : null; // room number
           var URLtype = (URLparams.query.type) ? URLparams.query.type : null; // room type
@@ -41,7 +41,7 @@ require([
           var URLctrY = (URLparams.query.ctry) ? parseInt(URLparams.query.ctry) : null;   // map center point y coord      
       } else {
           var URLlevel = null;
-          var URLbld = null;
+          //var URLbld = null;
           var URLfloor = null;
           var URLroom = null;
           var URLtype = null;
@@ -207,10 +207,9 @@ require([
       }
       // check url level parameter  
       if(URLfloor!= null){
+        
         floorplans.definitionExpression = "Floor = '" + URLfloor + "'";
-        if(URLfloor == 'L'){floorLevel.options[2].selected = true;}
-        else if(URLfloor == 'LL'){floorLevel.options[1].selected = true;}
-        else if(URLfloor == 'L2'){floorLevel.options[3].selected = true;}  
+        document.getElementById("infoFloorLevel").value = URLfloor;
         URLfloor = null;
       }
 
@@ -276,7 +275,7 @@ require([
       // center the map by url parameter
       view.on("click", function (e){      
         //var screenPoint = e.screenPoint;     
-        console.log(e.screenPoint)
+        //console.log(e.screenPoint)
         view.hitTest(e.screenPoint).then(getGraphics);                    
       }); 
       // action on click on a map
